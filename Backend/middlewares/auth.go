@@ -2,11 +2,10 @@ package middlewares
 
 import (
 	"fmt"
+	"meal-backend/utils"
 	"net/http"
 	"os"
 	"strings"
-
-	"foodiesbackend/utils"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"

@@ -3,20 +3,37 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 )
 
-var DB *sql.DB
+type Database interface {
+	InitDB() (*sql.DB, error)
+}
 
-func Initdb() {
-	// Connect to the PostgreSQL database
-	var err error
+type PostgresDB struct {
+	DB *sql.DB
+}
 
-	DB, err = sql.Open("postgres", "postgres://postgres:2345@localhost/foomdies?sslmode=disable")
+func NewPostgresDB() (*PostgresDB, error) {
+	connectionString := os.Getenv("CONNECTION_STRING")
+
+	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("error connecting to PostgreSQL database: %w", err)
 	}
 
-	fmt.Println("Successfully connected to the database")
+	err = db.Ping()
+
+	if err != nil {
+		return nil, fmt.Errorf("error pinging PostgreSQL database: %w", err)
+	}
+
+	var PgDB = &PostgresDB{
+		DB: db,
+	}
+	fmt.Println("Successfully connected to PostgreSQL database")
+
+	return PgDB, nil
 }
